@@ -719,7 +719,78 @@ button {
 }
 
 .services-header {
-  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.services-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2.5rem, 6vw, 4.5rem);
+  align-items: center;
+}
+
+@media (max-width: 992px) {
+  .services-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Animação de Pintura (Rolo e Máscara) */
+.paint-reveal-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  background-color: var(--bg-primary);
+}
+
+.services-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.painter-mover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  animation: paintMove 4s ease-in-out infinite;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.roller-svg {
+  position: absolute;
+  bottom: 100%; /* Fixado acima da máscara */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 100px;
+  margin-bottom: -22px; /* Espuma sobrepõe levemente a máscara */
+}
+
+.paint-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 200%;
+  background-color: var(--bg-primary); /* Simula a parede virgem */
+}
+
+@keyframes paintMove {
+  0%, 15% { top: 0%; }
+  50%, 65% { top: 100%; } /* Revelou tudo */
+  85%, 100% { top: 0%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .painter-mover { animation: none; top: 100%; display: none; }
+  .paint-mask { display: none; }
 }
 
 .services-list {
