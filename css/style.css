@@ -1,0 +1,1300 @@
+/* ==========================================================================
+   J. THALES PINTURAS - DESIGN SYSTEM & ESTILOS GLOBAIS
+   Referência visual: Sóbrio, institucional e arquitetônico (estilo WEG / Sicredi)
+   Cores: Off-white, Verde Esmeralda Profundo, Marrom Terroso Seco, Azul Água pontual
+   Regra estrita: Cantos 100% retos (border-radius: 0) em absolutamente tudo.
+   ========================================================================== */
+
+/* --- VARIÁVEIS DO SISTEMA --- */
+:root {
+  /* Paleta Institucional Sóbria */
+  --bg-primary: #F7F8F5;          /* Off-white institucional de fundo */
+  --bg-surface: #FFFFFF;          /* Branco puro para superfícies */
+  --bg-subtle: #EEF1ED;           /* Off-white secundário */
+  --bg-dark: #0A1C16;             /* Grafite esmeralda quase preto */
+
+  --color-emerald: #0C3629;       /* Verde esmeralda profundo (cor principal) */
+  --color-emerald-light: #154D3B; /* Variação suave de verde esmeralda */
+  --color-emerald-dark: #07221A;  /* Verde ultra profundo */
+
+  --color-earth: #6F5744;         /* Marrom terroso seco (cor secundária) */
+  --color-earth-light: #896F5A;   /* Variação suave de marrom terroso */
+
+  --color-aqua: #1C7D8D;          /* Azul água pontual (detalhe milimétrico) */
+  --color-aqua-subtle: rgba(28, 125, 141, 0.12);
+
+  --text-primary: #171A19;        /* Grafite escuro / preto quase puro */
+  --text-secondary: #48524D;      /* Grafite médio para parágrafos */
+  --text-muted: #727D78;          /* Grafite suave para metadados */
+  --text-inverse: #F7F8F5;        /* Texto claro sobre fundos escuros */
+
+  --border-light: #DFE3DE;        /* Linha arquitetônica fina */
+  --border-medium: #CAD0C9;       /* Linha de divisão intermediária */
+  --border-dark: #171A19;         /* Linha de alto contraste */
+
+  /* Tipografia */
+  --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+
+  /* Espaçamentos e Grid */
+  --container-max: 1220px;
+  --header-height: 76px;
+  --transition-smooth: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.2s ease;
+}
+
+/* --- RESET RIGOROSO & CANTO 100% RETO --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border-radius: 0 !important; /* REGRA MANDATÓRIA: Cantos retos em tudo */
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--header-height);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.6;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+/* --- ESTRUTURA DE CONTAINER & GRID --- */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1.25rem, 4vw, 2.5rem);
+  padding-right: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.section-spacing {
+  padding-top: clamp(4rem, 7vw, 7.5rem);
+  padding-bottom: clamp(4rem, 7vw, 7.5rem);
+}
+
+.section-spacing-compact {
+  padding-top: clamp(3rem, 5vw, 5rem);
+  padding-bottom: clamp(3rem, 5vw, 5rem);
+}
+
+/* --- RÓTULO EDITORIAL DE SEÇÃO (Estilo Corporativo WEG/Sicredi) --- */
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-emerald);
+  margin-bottom: 1.25rem;
+}
+
+.section-tag::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-aqua); /* Detalhe pontual em azul água */
+}
+
+.section-heading {
+  font-size: clamp(2rem, 3.5vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+}
+
+/* ==========================================================================
+   1. HEADER FIXO (Com glassmorfismo leve EXCLUSIVO aqui)
+   ========================================================================== */
+.site-header {
+  /* Estado inicial: transparente sobre o hero, texto claro */
+  --hdr-fg: #FFFFFF;
+  --hdr-fg-soft: rgba(255, 255, 255, 0.86);
+  --hdr-accent: #FFFFFF;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  min-height: var(--header-height);
+  z-index: 1000;
+  background-color: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.35s ease,
+              border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+/* Estado destacado ao rolar (ou com menu aberto): glassmorfismo leve */
+.site-header.is-scrolled,
+.site-header.menu-open {
+  --hdr-fg: var(--color-emerald);
+  --hdr-fg-soft: var(--text-secondary);
+  --hdr-accent: var(--color-emerald);
+  min-height: 64px;
+  background-color: rgba(247, 248, 245, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom-color: rgba(202, 208, 201, 0.9);
+  box-shadow: 0 6px 24px rgba(10, 28, 22, 0.08);
+}
+
+.header-container {
+  min-height: var(--header-height);
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  transition: padding 0.35s ease;
+}
+
+.site-header.is-scrolled .header-container,
+.site-header.menu-open .header-container {
+  min-height: 64px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Logo Corporativo Institucional */
+.header-logo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.logo-brand {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--hdr-fg);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: color 0.35s ease;
+}
+
+.logo-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-aqua);
+  display: inline-block;
+}
+
+.logo-sub {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hdr-fg-soft);
+  margin-top: 0.3rem;
+  max-width: 270px;
+  transition: color 0.35s ease;
+}
+
+.site-header.is-scrolled .logo-sub,
+.site-header.menu-open .logo-sub {
+  color: var(--color-earth);
+}
+
+/* Mapa de SC abaixo do nome: visível no topo, recolhe ao rolar */
+.logo-map {
+  display: block;
+  width: 92px;
+  max-height: 66px;
+  margin-top: 0.55rem;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-height 0.35s ease, margin-top 0.35s ease, opacity 0.25s ease;
+}
+
+.site-header.is-scrolled .logo-map,
+.site-header.menu-open .logo-map {
+  max-height: 0;
+  margin-top: 0;
+  opacity: 0;
+}
+
+.sc-map {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.site-header {
+  --hdr-map: #7FD8E4; /* azul água claro sobre o hero */
+}
+
+.site-header.is-scrolled,
+.site-header.menu-open {
+  --hdr-map: var(--color-aqua);
+}
+
+.sc-outline {
+  fill: none;
+  stroke: var(--hdr-fg);
+  stroke-width: 1.7;
+  stroke-linejoin: round;
+  transition: stroke 0.35s ease;
+}
+
+/* Litoral norte: Itapoá até a região de Itajaí e Balneário Camboriú */
+.sc-region {
+  fill: var(--hdr-map);
+  opacity: 0.4;
+  animation: sc-region-pulse 2.8s ease-in-out infinite;
+}
+
+.sc-dot {
+  fill: var(--hdr-map);
+  opacity: 0.3;
+  animation: sc-dot-on 2.6s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+}
+
+.sc-dot-main {
+  fill: var(--hdr-fg);
+}
+
+.sc-ring {
+  fill: none;
+  stroke: var(--hdr-map);
+  stroke-width: 1.4;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sc-ripple 2.6s ease-out infinite;
+  animation-delay: 1s;
+  opacity: 0;
+}
+
+@keyframes sc-region-pulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.65; }
+}
+
+@keyframes sc-dot-on {
+  0%, 100% { opacity: 0.3; }
+  25%, 60% { opacity: 1; }
+}
+
+@keyframes sc-ripple {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(4.5); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-region, .sc-dot, .sc-ring { animation: none; }
+  .sc-region { opacity: 0.45; }
+  .sc-dot { opacity: 1; }
+  .sc-ring { display: none; }
+}
+
+@media (max-width: 480px) {
+  .logo-sub { max-width: 200px; font-size: 0.54rem; letter-spacing: 0.08em; }
+  .logo-map { width: 76px; }
+}
+
+/* Navegação Desktop */
+.nav-desktop {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+}
+
+.nav-link {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--hdr-fg);
+  position: relative;
+  padding: 0.5rem 0;
+  transition: color 0.35s ease;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: var(--hdr-accent);
+  transition: width var(--transition-smooth);
+}
+
+.nav-link:hover {
+  color: var(--hdr-fg);
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Botão Discreto de WhatsApp no Header (1º dos 2 únicos do site) */
+.btn-whatsapp-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.65rem 1.15rem;
+  color: var(--hdr-fg);
+  background-color: transparent;
+  border: 1px solid var(--hdr-fg);
+  transition: all var(--transition-fast);
+}
+
+.btn-whatsapp-header:hover {
+  background-color: var(--color-emerald);
+  border-color: var(--color-emerald);
+  color: #FFFFFF;
+}
+
+.btn-whatsapp-header svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+}
+
+/* Menu Hambúrguer Mobile */
+.mobile-menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--hdr-fg);
+  background-color: transparent;
+  transition: border-color 0.35s ease;
+}
+
+.hamburger-line {
+  width: 20px;
+  height: 2px;
+  background-color: var(--hdr-fg);
+  transition: transform var(--transition-fast), opacity var(--transition-fast), background-color 0.35s ease;
+}
+
+.hamburger-line:not(:last-child) {
+  margin-bottom: 5px;
+}
+
+.mobile-menu-toggle[aria-expanded="true"] .hamburger-line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.mobile-menu-toggle[aria-expanded="true"] .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+.mobile-menu-toggle[aria-expanded="true"] .hamburger-line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Gaveta Mobile */
+.mobile-drawer {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  background-color: var(--bg-surface);
+  border-bottom: 2px solid var(--color-emerald);
+  padding: 1.5rem clamp(1.25rem, 4vw, 2.5rem) 2rem;
+  display: none;
+  flex-direction: column;
+  gap: 1.25rem;
+  z-index: 999;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.mobile-drawer.is-open {
+  display: flex;
+}
+
+.nav-mobile-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.nav-mobile-link {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: block;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.nav-mobile-link:active,
+.nav-mobile-link:hover {
+  color: var(--color-emerald);
+}
+
+/* ==========================================================================
+   2. HERO (Tela cheia, fundo em mídia, poucas informações, sem botão)
+   ========================================================================== */
+.hero-section {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-top: var(--header-height);
+  padding-bottom: clamp(3rem, 8vh, 5rem);
+  background-color: var(--color-emerald-dark);
+  overflow: hidden;
+  color: #FFFFFF;
+}
+
+/* Mídia de fundo (imagem agora; GIF depois, bastando trocar o arquivo) */
+.hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-media-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Véu esmeralda para garantir leitura do texto */
+.hero-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(7, 34, 26, 0.55) 0%, rgba(7, 34, 26, 0.15) 38%, rgba(7, 34, 26, 0.7) 100%),
+    linear-gradient(90deg, rgba(7, 34, 26, 0.6) 0%, rgba(7, 34, 26, 0) 65%);
+}
+
+.hero-section .container {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 720px;
+}
+
+/* Selo obrigatório: Entre os 3 melhores pintores de Itajaí */
+.hero-ranking-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  background-color: var(--color-emerald);
+  color: #FFFFFF;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  border-left: 3px solid var(--color-earth);
+}
+
+.hero-ranking-badge .badge-icon {
+  width: 14px;
+  height: 14px;
+  fill: #6FD0DD;
+}
+
+.hero-title {
+  font-size: clamp(2.4rem, 6vw, 4.75rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: #FFFFFF;
+  margin-bottom: 1.25rem;
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.88);
+  max-width: 480px;
+}
+
+
+/* ==========================================================================
+   3. FAIXA DE CREDIBILIDADE (Simples, alinhada e sem números inventados)
+   ========================================================================== */
+.credibility-strip {
+  background-color: var(--bg-surface);
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.credibility-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  divide-x: 1px solid var(--border-light);
+}
+
+.credibility-item {
+  padding: 1.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid var(--border-light);
+  position: relative;
+  transition: background-color var(--transition-fast);
+}
+
+.credibility-item:last-child {
+  border-right: none;
+}
+
+.credibility-item:hover {
+  background-color: #FAFAF8;
+}
+
+.credibility-number {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--color-aqua);
+  margin-bottom: 0.35rem;
+}
+
+.credibility-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-emerald);
+  line-height: 1.25;
+  margin-bottom: 0.25rem;
+}
+
+.credibility-desc {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   4. SEÇÃO SOBRE (O Pintor Thales e a Empresa)
+   ========================================================================== */
+.about-section {
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2.5rem, 6vw, 5.5rem);
+  align-items: center;
+}
+
+.about-text-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.about-paragraph {
+  font-size: 1.025rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
+}
+
+.about-paragraph strong {
+  color: var(--color-emerald-dark);
+  font-weight: 700;
+}
+
+.about-metrics {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-light);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.about-metric-item h4 {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-earth);
+  margin-bottom: 0.25rem;
+}
+
+.about-metric-item p {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.about-image-wrapper {
+  position: relative;
+  border: 1px solid var(--border-light);
+  background-color: var(--bg-surface);
+  padding: 0.75rem;
+}
+
+.about-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: top center;
+  filter: grayscale(15%);
+  transition: filter var(--transition-smooth);
+}
+
+.about-image-wrapper:hover .about-image {
+  filter: grayscale(0%);
+}
+
+.about-image-caption {
+  margin-top: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border-light);
+  padding-top: 0.5rem;
+}
+
+/* ==========================================================================
+   5. SEÇÃO SERVIÇOS (Lista editorial numerada, SEM CARDS e SEM BOTÕES)
+   ========================================================================== */
+.services-section {
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.services-header {
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+.services-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border-light);
+}
+
+.service-item {
+  display: grid;
+  grid-template-columns: 80px 1.2fr 2fr;
+  align-items: baseline;
+  padding: clamp(1.5rem, 2.5vw, 2.25rem) 0;
+  border-bottom: 1px solid var(--border-light);
+  transition: background-color var(--transition-fast), padding-left var(--transition-fast);
+}
+
+.service-item:hover {
+  background-color: #FAFAF8;
+  padding-left: 0.75rem;
+}
+
+/* Destaque especial para Aplicação de Pedras Naturais */
+.service-item.is-featured {
+  background-color: rgba(111, 87, 68, 0.04);
+  border-left: 3px solid var(--color-earth);
+  padding-left: 1rem;
+}
+
+.service-item.is-featured .service-number {
+  color: var(--color-earth);
+}
+
+.service-item.is-featured .service-title {
+  color: var(--color-earth);
+}
+
+.service-number {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-emerald);
+  letter-spacing: -0.02em;
+}
+
+.service-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.service-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.service-badge-destaque {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  background-color: var(--color-earth);
+  padding: 0.2rem 0.5rem;
+}
+
+.service-description {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   6. SEÇÃO OBRAS (Grade enxuta 6 fotos, P&B suave -> cor ao hover/toque)
+   ========================================================================== */
+.works-section {
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.work-card {
+  position: relative;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.work-image-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background-color: var(--bg-subtle);
+}
+
+.work-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Regra: Fotos aparecem em P&B leve e ganham cor no hover ou toque */
+  filter: grayscale(85%);
+  transition: filter 0.4s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Efeito Hover em Desktop */
+.work-card:hover .work-image,
+.work-card.active-color .work-image {
+  filter: grayscale(0%);
+  transform: scale(1.03);
+}
+
+.work-caption {
+  padding: 1rem 1.25rem;
+  background-color: var(--bg-surface);
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.work-type {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-emerald-dark);
+}
+
+.work-location {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+/* ==========================================================================
+   MENSAGEM (vídeo de fundo em loop, véu esmeralda, sem glassmorfismo)
+   ========================================================================== */
+.message-section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  min-height: 60svh;
+  padding: clamp(3rem, 8vw, 5rem) 0;
+  background-color: var(--color-emerald); /* Fallback sólido se o vídeo falhar */
+  color: #FFFFFF;
+  overflow: hidden;
+}
+
+.message-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.message-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.message-section.is-video-failed .message-video {
+  display: none;
+}
+
+/* Véu em verde esmeralda escuro (~55%) para leitura do texto */
+.message-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(7, 34, 26, 0.55);
+}
+
+.message-content {
+  position: relative;
+  z-index: 1;
+  max-width: 820px;
+  text-align: center;
+}
+
+.message-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
+  margin-bottom: 1.25rem;
+}
+
+.message-text {
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+@media (min-width: 769px) {
+  .message-section {
+    min-height: 70vh;
+    min-height: 70svh;
+  }
+}
+
+/* ==========================================================================
+   7. SEÇÃO AVALIAÇÕES (3 Depoimentos, visual de citação simples, SEM CARD)
+   ========================================================================== */
+.reviews-section {
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(2rem, 4vw, 3.5rem);
+}
+
+/* Citação editorial simples, limpa, sem fundo de card */
+.review-quote-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-left: 2px solid var(--color-emerald);
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.review-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  font-style: normal;
+  margin-bottom: 1.5rem;
+}
+
+.review-author-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.review-author-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-emerald-dark);
+}
+
+.review-author-meta {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   8. SEÇÃO REGIÃO DE ATENDIMENTO ("Itajaí e região" com frase curta)
+   ========================================================================== */
+.region-section {
+  background-color: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.region-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.region-text {
+  font-size: clamp(1.15rem, 1.6vw, 1.35rem);
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   9. SEÇÃO CONTATO (Fale com o Thales, 2º e último botão de WhatsApp)
+   ========================================================================== */
+.contact-section {
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.contact-box {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+  padding: clamp(2.5rem, 5vw, 4.5rem);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-light);
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* Botão WhatsApp Principal (2º do site - Proibido outros botões) */
+.btn-whatsapp-main {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background-color: var(--color-emerald);
+  color: #FFFFFF;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 1.15rem 2rem;
+  border: 1px solid var(--color-emerald);
+  width: fit-content;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-whatsapp-main:hover {
+  background-color: var(--color-emerald-light);
+}
+
+.btn-whatsapp-main svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.contact-direct-channels {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-left: clamp(1.5rem, 3vw, 3rem);
+  border-left: 1px solid var(--border-light);
+}
+
+.channel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.channel-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.channel-link {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-emerald-dark);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.channel-link:hover {
+  color: var(--color-aqua);
+}
+
+/* ==========================================================================
+   10. RODAPÉ SIMPLES
+   ========================================================================== */
+.site-footer {
+  background-color: var(--bg-dark);
+  color: var(--text-inverse);
+  padding: 3rem 0;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+}
+
+.footer-city {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: #9EABA5;
+  margin-top: 0.25rem;
+}
+
+.footer-copy {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: #72827B;
+}
+
+.footer-socials {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.footer-social-link {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: #BDC7C2;
+  transition: color var(--transition-fast);
+}
+
+.footer-social-link:hover {
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   ANIMAÇÃO SUTIL DE SCROLL (Fade curto, leve e sem peso)
+   ========================================================================== */
+.fade-in-scroll {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.fade-in-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE & MOBILE FIRST (Foco estrito em 360px e celulares)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .service-item {
+    grid-template-columns: 60px 1fr;
+    row-gap: 0.5rem;
+  }
+
+  .service-description {
+    grid-column: 2 / -1;
+  }
+
+  .works-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .reviews-grid {
+    grid-template-columns: 1fr;
+    gap: 2.25rem;
+  }
+
+  .contact-box {
+    grid-template-columns: 1fr;
+    padding: 2rem;
+  }
+
+  .contact-direct-channels {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid var(--border-light);
+    padding-top: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-desktop,
+  .btn-whatsapp-header {
+    display: none;
+  }
+
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
+  .credibility-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .credibility-item:nth-child(2) {
+    border-right: none;
+  }
+
+  .credibility-item:nth-child(3),
+  .credibility-item:nth-child(4) {
+    border-top: 1px solid var(--border-light);
+  }
+
+  .works-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --header-height: 68px;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-ranking-badge {
+    font-size: 0.72rem;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .credibility-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .credibility-item {
+    border-right: none;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .credibility-item:last-child {
+    border-bottom: none;
+  }
+
+  .service-item {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+
+  .service-number {
+    font-size: 0.95rem;
+  }
+
+  .btn-whatsapp-main {
+    width: 100%;
+    text-align: center;
+  }
+}
