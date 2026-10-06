@@ -25,6 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // 3.2 Seção de mensagem com vídeo de fundo em loop
   inicializarMensagem(typeof SITE_CONFIG !== "undefined" ? SITE_CONFIG.mensagem : null);
 
+  // 3.3 Hero video
+  inicializarHero();
+
   // 4. Interatividade da Grade de Obras (Toque no Celular & Hover)
   inicializarGradeObras();
 
@@ -125,7 +128,6 @@ function inicializarHeaderScroll() {
  * Seção de mensagem: vídeo de fundo em sequência e ciclo infinito.
  * - Usa um único <video> trocando o src quando cada vídeo termina.
  * - Pausa fora da tela (IntersectionObserver) e retoma ao voltar.
- * - prefers-reduced-motion: mostra apenas o poster, sem tocar.
  * - Falha no vídeo: a seção continua legível com fundo verde sólido.
  */
 function inicializarMensagem(cfg) {
@@ -133,7 +135,6 @@ function inicializarMensagem(cfg) {
   const video = document.getElementById("message-video");
   if (!secao || !video || !cfg) return;
 
-  // Textos editáveis em config.js
   const titulo = secao.querySelector(".message-title");
   const texto = secao.querySelector(".message-text");
   if (titulo && cfg.titulo) titulo.textContent = cfg.titulo;
@@ -145,39 +146,28 @@ function inicializarMensagem(cfg) {
     return;
   }
 
-  // Compatível com abertura direta via file://
   const caminho = (p) => (window.location.protocol === "file:" ? "." + p : p);
-  const reduzMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
   let indice = 0;
   let visivel = false;
 
-  // Garante o muted (necessário para autoplay no celular)
   video.muted = true;
   video.defaultMuted = true;
   video.playsInline = true;
 
   const carregar = (i) => {
     indice = i;
-    video.poster = caminho(lista[i].poster);
     video.src = caminho(lista[i].src);
   };
 
   const tocar = () => {
-    if (reduzMovimento || !visivel || secao.classList.contains("is-video-failed")) return;
+    if (!visivel || secao.classList.contains("is-video-failed")) return;
     const p = video.play();
-    if (p && typeof p.catch === "function") p.catch(() => {});
+    if (p && typeof p.catch === "function") {
+      p.catch(() => falhou());
+    }
   };
 
   const falhou = () => secao.classList.add("is-video-failed");
-
-  // Apenas poster quando o usuário prefere menos movimento
-  if (reduzMovimento) {
-    video.poster = caminho(lista[0].poster);
-    video.removeAttribute("autoplay");
-    video.preload = "none";
-    return;
-  }
 
   video.addEventListener("ended", () => {
     carregar((indice + 1) % lista.length);
@@ -201,6 +191,40 @@ function inicializarMensagem(cfg) {
       video.pause();
     }
   }, { threshold: 0.15 }).observe(secao);
+}
+
+/**
+ * Hero video: Tenta tocar e, caso falhe, exibe a imagem de fallback.
+ */
+function inicializarHero() {
+  const heroVideo = document.getElementById("hero-video");
+  const heroFallbackImg = document.getElementById("hero-fallback-img");
+  
+  if (!heroVideo || !heroFallbackImg) return;
+
+  // Usa src do arquivo, conserta caso abra via file://
+  if (window.location.protocol === "file:") {
+    const s = heroVideo.getAttribute("src");
+    if (s && s.startsWith("/")) {
+      heroVideo.src = "." + s;
+    }
+  }
+
+  heroVideo.muted = true;
+  heroVideo.defaultMuted = true;
+  heroVideo.playsInline = true;
+
+  const falhou = () => {
+    heroVideo.style.display = "none";
+    heroFallbackImg.style.display = "block";
+  };
+
+  heroVideo.addEventListener("error", falhou);
+
+  const p = heroVideo.play();
+  if (p && typeof p.catch === "function") {
+    p.catch(() => falhou());
+  }
 }
 
 /**

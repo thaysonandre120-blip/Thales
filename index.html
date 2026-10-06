@@ -93,8 +93,6 @@
         <ul class="nav-desktop">
           <li><a href="#sobre" class="nav-link">Sobre</a></li>
           <li><a href="#servicos" class="nav-link">Serviços</a></li>
-          <li><a href="#obras" class="nav-link">Obras</a></li>
-          <li><a href="#regiao" class="nav-link">Região</a></li>
           <li><a href="#contato" class="nav-link">Contato</a></li>
         </ul>
       </nav>
@@ -121,8 +119,6 @@
       <ul class="nav-mobile-list">
         <li><a href="#sobre" class="nav-mobile-link">Sobre</a></li>
         <li><a href="#servicos" class="nav-mobile-link">Serviços</a></li>
-        <li><a href="#obras" class="nav-mobile-link">Obras</a></li>
-        <li><a href="#regiao" class="nav-mobile-link">Região</a></li>
         <li><a href="#contato" class="nav-mobile-link">Contato</a></li>
       </ul>
       <a href="https://wa.me/5547999999999" id="mobile-whatsapp-btn" class="btn-whatsapp-main" target="_blank" rel="noopener noreferrer" style="width: 100%; justify-content: center;">
@@ -137,9 +133,11 @@
          ========================================================================== -->
     <section class="hero-section" id="hero" aria-labelledby="hero-title">
 
-      <!-- Mídia de fundo: trocar o arquivo aqui quando o GIF estiver disponível -->
+      <!-- Mídia de fundo: vídeo com imagem de fallback -->
       <div class="hero-media">
-        <img src="/images/hero-new.jpg" alt="Obra de alto padrão com pintura fina e arquitetura contemporânea em Santa Catarina" class="hero-media-img" loading="eager" fetchpriority="high">
+        <!-- O vídeo será controlado via JS para tratar erros de carregamento e prefers-reduced-motion -->
+        <video id="hero-video" class="hero-video" src="/videos/hero.mp4" autoplay muted playsinline preload="auto" aria-hidden="true" tabindex="-1"></video>
+        <img src="/images/hero-pintura-spray.jpg" id="hero-fallback-img" alt="Obra de alto padrão com pintura fina e arquitetura contemporânea em Santa Catarina" class="hero-media-img" loading="eager" fetchpriority="high" style="display: none;">
       </div>
 
       <div class="container">
@@ -436,7 +434,7 @@
          ========================================================================== -->
     <section class="message-section" id="mensagem" aria-labelledby="mensagem-titulo">
       <div class="message-media">
-        <video id="message-video" class="message-video" autoplay muted playsinline preload="metadata" aria-hidden="true" tabindex="-1"></video>
+        <video id="message-video" class="message-video" autoplay muted playsinline preload="auto" aria-hidden="true" tabindex="-1"></video>
       </div>
       <div class="message-overlay" aria-hidden="true"></div>
       <div class="container message-content fade-in-scroll">
@@ -614,3 +612,4 @@
   <script src="js/main.js"></script>
 </body>
 </html>
+

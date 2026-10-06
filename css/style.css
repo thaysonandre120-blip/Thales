@@ -479,7 +479,6 @@ button {
    ========================================================================== */
 .hero-section {
   position: relative;
-  min-height: 100vh;
   min-height: 100svh;
   display: flex;
   align-items: center;
@@ -497,21 +496,27 @@ button {
   z-index: 0;
 }
 
-.hero-media-img {
+.hero-media-img,
+.hero-video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: 70% center;
+  z-index: 0;
+  border: none;
+  outline: none;
 }
 
-/* Véu esmeralda para garantir leitura do texto */
+/* Véu esmeralda para garantir leitura do texto (da esquerda pra direita) */
 .hero-media::after {
   content: "";
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(180deg, rgba(7, 34, 26, 0.55) 0%, rgba(7, 34, 26, 0.15) 38%, rgba(7, 34, 26, 0.7) 100%),
-    linear-gradient(90deg, rgba(7, 34, 26, 0.6) 0%, rgba(7, 34, 26, 0) 65%);
+  background: linear-gradient(90deg, rgba(7, 34, 26, 0.75) 0%, rgba(7, 34, 26, 0.15) 100%);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .hero-section .container {
@@ -563,6 +568,14 @@ button {
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.88);
   max-width: 480px;
+}
+
+/* Limita altura no celular para max ~85vh */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: auto;
+    height: 85vh;
+  }
 }
 
 
