@@ -371,32 +371,33 @@ button {
   width: 100%;
 }
 
-/* Botão Discreto de WhatsApp no Header (1º dos 2 únicos do site) */
-.btn-whatsapp-header {
-  display: inline-flex;
+/* Ícone flutuante fixo de WhatsApp (lateral direita) */
+.floating-whatsapp {
+  position: fixed;
+  right: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 900;
+  width: 56px;
+  height: 56px;
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 0.65rem 1.15rem;
-  color: var(--hdr-fg);
-  background-color: transparent;
-  border: 1px solid var(--hdr-fg);
-  transition: all var(--transition-fast);
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #25D366;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.btn-whatsapp-header:hover {
-  background-color: var(--color-emerald);
-  border-color: var(--color-emerald);
-  color: #FFFFFF;
+.floating-whatsapp:hover {
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.35);
 }
 
-.btn-whatsapp-header svg {
-  width: 15px;
-  height: 15px;
-  fill: currentColor;
+.floating-whatsapp svg {
+  width: 30px;
+  height: 30px;
+  fill: #FFFFFF;
 }
 
 /* Menu Hambúrguer Mobile */
@@ -479,9 +480,9 @@ button {
    ========================================================================== */
 .hero-section {
   position: relative;
-  min-height: 100svh;
+  min-height: 78svh;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   padding-top: var(--header-height);
   padding-bottom: clamp(3rem, 8vh, 5rem);
   background-color: var(--color-emerald-dark);
@@ -555,12 +556,19 @@ button {
 }
 
 .hero-title {
-  font-size: clamp(2.4rem, 6vw, 4.75rem);
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.04em;
-  color: #FFFFFF;
-  margin-bottom: 1.25rem;
+  font-family: 'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif;
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: #E3F1FB;
+  margin: 0;
+}
+
+.hero-title strong {
+  display: block;
+  font-weight: 300;
+  color: #E3F1FB;
 }
 
 .hero-subtitle {
@@ -570,11 +578,29 @@ button {
   max-width: 480px;
 }
 
+/* Selo de ranking abaixo do hero */
+.ranking-line {
+  text-align: center;
+  padding: 1.25rem 1rem;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.ranking-line-text {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-emerald-dark);
+}
+
 /* Limita altura no celular para max ~85vh */
 @media (max-width: 768px) {
   .hero-section {
     min-height: auto;
-    height: 85vh;
+    height: 70vh;
   }
 }
 
@@ -737,7 +763,7 @@ button {
 
 .services-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: clamp(2.5rem, 6vw, 4.5rem);
   align-items: center;
 }
@@ -806,78 +832,164 @@ button {
   .paint-mask { display: none; }
 }
 
-.services-list {
+/* Lista reduzida em acordeão (abre ao clicar na linha) */
+.svc-list {
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--border-light);
 }
 
-.service-item {
-  display: grid;
-  grid-template-columns: 80px 1.2fr 2fr;
-  align-items: baseline;
-  padding: clamp(1.5rem, 2.5vw, 2.25rem) 0;
+.svc-item {
   border-bottom: 1px solid var(--border-light);
-  transition: background-color var(--transition-fast), padding-left var(--transition-fast);
+  transition: background-color var(--transition-fast);
 }
 
-.service-item:hover {
+.svc-item.is-open {
   background-color: #FAFAF8;
-  padding-left: 0.75rem;
 }
 
-/* Destaque especial para Aplicação de Pedras Naturais */
-.service-item.is-featured {
-  background-color: rgba(111, 87, 68, 0.04);
-  border-left: 3px solid var(--color-earth);
-  padding-left: 1rem;
+.svc-heading {
+  margin: 0;
 }
 
-.service-item.is-featured .service-number {
-  color: var(--color-earth);
+.svc-trigger {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: clamp(1.25rem, 2.2vw, 1.75rem) 0.75rem;
+  background: none;
+  border: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
 }
 
-.service-item.is-featured .service-title {
-  color: var(--color-earth);
+.svc-trigger:focus-visible {
+  outline: 2px solid var(--color-emerald);
+  outline-offset: -2px;
 }
 
-.service-number {
+.svc-number {
   font-family: var(--font-mono);
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--color-emerald);
   letter-spacing: -0.02em;
 }
 
-.service-title-wrap {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.service-title {
-  font-size: 1.35rem;
+.svc-title {
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text-primary);
+  transition: transform var(--transition-fast);
 }
 
-.service-badge-destaque {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #FFFFFF;
-  background-color: var(--color-earth);
-  padding: 0.2rem 0.5rem;
+.svc-trigger:hover .svc-title {
+  transform: translateX(4px);
 }
 
-.service-description {
-  font-size: 0.95rem;
+/* Ícone + que vira − ao abrir */
+.svc-icon {
+  position: relative;
+  width: 18px;
+  height: 18px;
+}
+
+.svc-icon::before,
+.svc-icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background-color: var(--text-primary);
+  transform: translate(-50%, -50%);
+  transition: transform 0.3s ease;
+}
+
+.svc-icon::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.svc-item.is-open .svc-icon::after {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+/* Painel expansível (animação suave de altura) */
+.svc-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s ease;
+}
+
+.svc-item.is-open .svc-panel {
+  grid-template-rows: 1fr;
+}
+
+.svc-panel-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.svc-panel-content {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  align-items: center;
+  padding: 0.25rem 0.75rem clamp(1.5rem, 3vw, 2.25rem) calc(64px + 1.25rem);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.svc-item.is-open .svc-panel-content {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.1s;
+}
+
+.svc-desc {
+  font-size: 1rem;
   color: var(--text-secondary);
   line-height: 1.5;
+}
+
+.svc-photo {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .svc-trigger {
+    grid-template-columns: 44px 1fr auto;
+  }
+
+  .svc-panel-content {
+    grid-template-columns: 1fr;
+    padding-left: calc(44px + 1.25rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .svc-panel-content {
+    padding-left: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .svc-panel,
+  .svc-panel-content,
+  .svc-icon::before,
+  .svc-icon::after {
+    transition: none;
+  }
 }
 
 /* ==========================================================================
@@ -1276,15 +1388,6 @@ button {
     gap: 2.5rem;
   }
 
-  .service-item {
-    grid-template-columns: 60px 1fr;
-    row-gap: 0.5rem;
-  }
-
-  .service-description {
-    grid-column: 2 / -1;
-  }
-
   .works-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1308,8 +1411,7 @@ button {
 }
 
 @media (max-width: 768px) {
-  .nav-desktop,
-  .btn-whatsapp-header {
+  .nav-desktop {
     display: none;
   }
 
@@ -1366,15 +1468,6 @@ button {
 
   .credibility-item:last-child {
     border-bottom: none;
-  }
-
-  .service-item {
-    grid-template-columns: 1fr;
-    gap: 0.35rem;
-  }
-
-  .service-number {
-    font-size: 0.95rem;
   }
 
   .btn-whatsapp-main {

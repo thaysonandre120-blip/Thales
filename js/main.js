@@ -33,7 +33,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 5. Animação Suave de Scroll (Fade Curto e Leve)
   inicializarAnimacoesScroll();
+
+  // 6. Lista de serviços em acordeão
+  inicializarServicos();
 });
+
+/**
+ * Acordeão de serviços: abre um por vez ao clicar na linha
+ */
+function inicializarServicos() {
+  const itens = document.querySelectorAll(".svc-item");
+
+  itens.forEach((item) => {
+    const botao = item.querySelector(".svc-trigger");
+    if (!botao) return;
+
+    botao.addEventListener("click", () => {
+      const abrir = !item.classList.contains("is-open");
+
+      itens.forEach((outro) => {
+        outro.classList.remove("is-open");
+        const b = outro.querySelector(".svc-trigger");
+        if (b) b.setAttribute("aria-expanded", "false");
+      });
+
+      if (abrir) {
+        item.classList.add("is-open");
+        botao.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
+}
 
 /**
  * Aplica as constantes do arquivo config.js nos elementos do DOM
@@ -41,10 +71,10 @@ document.addEventListener("DOMContentLoaded", () => {
 function aplicarConfiguracoes(cfg) {
   const whatsappUrl = `https://wa.me/${cfg.whatsapp.numeroLink}?text=${encodeURIComponent(cfg.whatsapp.mensagemPadrao)}`;
 
-  // Botão WhatsApp Header (1º do site)
-  const btnHeader = document.getElementById("header-whatsapp-btn");
-  if (btnHeader) {
-    btnHeader.href = whatsappUrl;
+  // Ícone flutuante de WhatsApp (lateral direita)
+  const btnFloating = document.getElementById("floating-whatsapp-btn");
+  if (btnFloating) {
+    btnFloating.href = whatsappUrl;
   }
 
   // Botão WhatsApp Contato (2º e último do site)

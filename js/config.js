@@ -20,9 +20,9 @@ const SITE_CONFIG = {
   // O botão de WhatsApp só pode aparecer em 2 lugares: Header e Seção Contato.
   whatsapp: {
     // Número formatado para exibição visual
-    numeroExibicao: "(47) 99999-9999",
-    // Número com DDI (55) + DDD (47) + dígitos (sem espaços ou traços) para o link wa.me
-    numeroLink: "5547999999999",
+    numeroExibicao: "(83) 99191-2530",
+    // Número com DDI (55) + DDD (83) + dígitos (sem espaços ou traços) para o link wa.me
+    numeroLink: "5583991912530",
     // Mensagem inicial enviada pelo cliente ao clicar
     mensagemPadrao: "Olá, Thales! Gostaria de conversar sobre um projeto de pintura em Itajaí e região.",
     // Rótulos dos botões
