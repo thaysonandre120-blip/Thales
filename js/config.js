@@ -34,8 +34,8 @@ const SITE_CONFIG = {
   redesSociais: {
     instagram: {
       exibir: true,
-      usuario: "@jthalespinturas", // Altere para o seu @ de usuário
-      url: "https://instagram.com/jthalespinturas"
+      usuario: "@jthales_pinturas", // Altere para o seu @ de usuário
+      url: "https://www.instagram.com/jthales_pinturas?utm_source=ig_web_button_share_sheet&stkn=ZDNlZDc0MzIxNw=="
     },
     youtube: {
       exibir: true, // Mude para false se preferir ocultar o link do YouTube

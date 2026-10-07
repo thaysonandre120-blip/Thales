@@ -358,3 +358,52 @@ function inicializarAnimacoesScroll() {
 
   elementos.forEach((el) => observer.observe(el));
 }
+
+/**
+ * Lógica do Lightbox para Galeria de Fotos
+ */
+function inicializarLightbox() {
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxClose = document.getElementById('lightbox-close');
+  const photos = document.querySelectorAll('.svc-photo');
+
+  if (!lightbox || !lightboxImg || !lightboxClose) return;
+
+  photos.forEach(photo => {
+    photo.addEventListener('click', () => {
+      lightboxImg.src = photo.src;
+      lightboxImg.alt = photo.alt;
+      lightbox.classList.add('active');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden'; // Impede o scroll de fundo
+    });
+  });
+
+  const fecharLightbox = () => {
+    lightbox.classList.remove('active');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = 'auto'; // Restaura o scroll
+    setTimeout(() => {
+      lightboxImg.src = '';
+    }, 300); // Aguarda animação CSS terminar
+  };
+
+  lightboxClose.addEventListener('click', fecharLightbox);
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) {
+      fecharLightbox();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+      fecharLightbox();
+    }
+  });
+}
+
+// Inicializa no DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+  inicializarLightbox();
+});
