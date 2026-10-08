@@ -10,6 +10,7 @@
   <meta name="keywords" content="pintor em itajai, pintura residencial itajai, pintura predial itajai, aplicacao de pedras naturais sc, j thales pinturas, pintor praia brava itajai">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://jthalespinturas.com.br/">
+  <link rel="preload" as="image" href="/images/hero-pintura-spray.jpg" fetchpriority="high">
 
   <!-- Open Graph / Meta Compartilhamento -->
   <meta property="og:type" content="website">
@@ -26,6 +27,7 @@
 
   <!-- Estilos Customizados -->
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/cobalto.css">
 
   <!-- Schema.org JSON-LD para SEO Local -->
   <script type="application/ld+json">
@@ -127,7 +129,7 @@
       <!-- Mídia de fundo: vídeo com imagem de fallback -->
       <div class="hero-media">
         <!-- O vídeo será controlado via JS para tratar erros de carregamento e prefers-reduced-motion -->
-        <video id="hero-video" class="hero-video" src="/videos/hero.mp4" autoplay muted playsinline preload="auto" aria-hidden="true" tabindex="-1"></video>
+        <video id="hero-video" class="hero-video" src="/videos/hero.mp4" autoplay muted playsinline preload="metadata" poster="/images/hero-pintura-spray.jpg" aria-hidden="true" tabindex="-1"></video>
         <img src="/images/hero-pintura-spray.jpg" id="hero-fallback-img" alt="Obra de alto padrão com pintura fina e arquitetura contemporânea em Santa Catarina" class="hero-media-img" loading="eager" fetchpriority="high" style="display: none;">
       </div>
 
@@ -391,8 +393,10 @@
   </div>
 
   <!-- Constantes Editáveis e Scripts -->
-  <script src="js/config.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/config.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/cobalto-config.js" defer></script>
+  <script src="js/cobalto.js" defer></script>
 </body>
 </html>
 
