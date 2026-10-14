@@ -1,0 +1,42 @@
+[1mdiff --git a/index.html b/index.html[m
+[1mindex b19a2e4..042af2c 100644[m
+[1m--- a/index.html[m
+[1m+++ b/index.html[m
+[36m@@ -10,6 +10,7 @@[m
+   <meta name="keywords" content="pintor em itajai, pintura residencial itajai, pintura predial itajai, aplicacao de pedras naturais sc, j thales pinturas, pintor praia brava itajai">[m
+   <meta name="robots" content="index, follow">[m
+   <link rel="canonical" href="https://jthalespinturas.com.br/">[m
+[32m+[m[32m  <link rel="preload" as="image" href="/images/hero-pintura-spray.jpg" fetchpriority="high">[m
+ [m
+   <!-- Open Graph / Meta Compartilhamento -->[m
+   <meta property="og:type" content="website">[m
+[36m@@ -26,6 +27,7 @@[m
+ [m
+   <!-- Estilos Customizados -->[m
+   <link rel="stylesheet" href="css/style.css">[m
+[32m+[m[32m  <link rel="stylesheet" href="css/cobalto.css">[m
+ [m
+   <!-- Schema.org JSON-LD para SEO Local -->[m
+   <script type="application/ld+json">[m
+[36m@@ -127,7 +129,7 @@[m
+       <!-- Mídia de fundo: vídeo com imagem de fallback -->[m
+       <div class="hero-media">[m
+         <!-- O vídeo será controlado via JS para tratar erros de carregamento e prefers-reduced-motion -->[m
+[31m-        <video id="hero-video" class="hero-video" src="/videos/hero.mp4" autoplay muted playsinline preload="auto" aria-hidden="true" tabindex="-1"></video>[m
+[32m+[m[32m        <video id="hero-video" class="hero-video" src="/videos/hero.mp4" autoplay muted playsinline preload="metadata" poster="/images/hero-pintura-spray.jpg" aria-hidden="true" tabindex="-1"></video>[m
+         <img src="/images/hero-pintura-spray.jpg" id="hero-fallback-img" alt="Obra de alto padrão com pintura fina e arquitetura contemporânea em Santa Catarina" class="hero-media-img" loading="eager" fetchpriority="high" style="display: none;">[m
+       </div>[m
+ [m
+[36m@@ -391,8 +393,10 @@[m
+   </div>[m
+ [m
+   <!-- Constantes Editáveis e Scripts -->[m
+[31m-  <script src="js/config.js"></script>[m
+[31m-  <script src="js/main.js"></script>[m
+[32m+[m[32m  <script src="js/config.js" defer></script>[m
+[32m+[m[32m  <script src="js/main.js" defer></script>[m
+[32m+[m[32m  <script src="js/cobalto-config.js" defer></script>[m
+[32m+[m[32m  <script src="js/cobalto.js" defer></script>[m
+ </body>[m
+ </html>[m
+ [m

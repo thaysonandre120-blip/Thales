@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 6. Lista de serviços em acordeão
   inicializarServicos();
+  inicializarSubServicos();
 });
 
 /**
@@ -56,6 +57,38 @@ function inicializarServicos() {
         const b = outro.querySelector(".svc-trigger");
         if (b) b.setAttribute("aria-expanded", "false");
       });
+
+      if (abrir) {
+        item.classList.add("is-open");
+        botao.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
+}
+
+/**
+ * Acordeão de sub-serviços (ex: Pintura externa / Pintura interna)
+ * Permite recolher e expandir cada sub-seção individualmente
+ */
+function inicializarSubServicos() {
+  const subItens = document.querySelectorAll(".svc-sub-item");
+
+  subItens.forEach((item) => {
+    const botao = item.querySelector(".svc-sub-trigger");
+    if (!botao) return;
+
+    botao.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const abrir = !item.classList.contains("is-open");
+      const parentList = item.closest(".svc-sub-list");
+
+      if (parentList) {
+        parentList.querySelectorAll(".svc-sub-item").forEach((outro) => {
+          outro.classList.remove("is-open");
+          const b = outro.querySelector(".svc-sub-trigger");
+          if (b) b.setAttribute("aria-expanded", "false");
+        });
+      }
 
       if (abrir) {
         item.classList.add("is-open");
@@ -360,7 +393,7 @@ function inicializarAnimacoesScroll() {
 }
 
 /**
- * L�gica do Lightbox para Galeria de Fotos
+ * L�gica do Lightbox para Galeria de Fotos
  */
 function inicializarLightbox() {
   const lightbox = document.getElementById('lightbox');
@@ -386,7 +419,7 @@ function inicializarLightbox() {
     document.body.style.overflow = 'auto'; // Restaura o scroll
     setTimeout(() => {
       lightboxImg.src = '';
-    }, 300); // Aguarda anima��o CSS terminar
+    }, 300); // Aguarda anima��o CSS terminar
   };
 
   lightboxClose.addEventListener('click', fecharLightbox);
