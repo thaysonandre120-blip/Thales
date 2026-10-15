@@ -6,11 +6,19 @@
 - `GEMINI_MODEL`: Modelo da API (ex: `gemini-2.5-flash`).
 
 ## Testes Locais
-Execute no terminal usando Vercel CLI:
+O Cobalto precisa do backend Node rodando para responder às mensagens. Você pode rodar de duas formas:
+
+**Opção 1 (Recomendada - Sem instalar nada):**
+```bash
+node dev-server.js
+```
+Acesse `http://localhost:3000`.
+
+**Opção 2 (Via Vercel CLI):**
 ```bash
 npx vercel dev
 ```
-O backend Serverless (na porta `/api/chat`) não funcionará via Live Server comum.
+*(Nota: Abrir direto pelo Live Server comum do VS Code não executará a rota `/api/chat`).*
 
 ## Segurança
 - Rate limit (12 requisições/min) é de melhor esforço (na RAM do ambiente serverless).

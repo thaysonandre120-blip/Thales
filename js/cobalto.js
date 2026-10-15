@@ -12,27 +12,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const wAppUrl = `https://wa.me/${COBALTO_CONFIG.whatsappNumeroLink}`;
 
-  const svgBalon = `<svg viewBox="0 0 24 24"><path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H5.17L4 17.17V4H20V16Z"/></svg>`;
+  const avatarSrc = (COBALTO_CONFIG && COBALTO_CONFIG.avatarUrl) ? COBALTO_CONFIG.avatarUrl : "images/cobalto-logo.png";
   const svgClose = `<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"/></svg>`;
   const svgSend = `<svg viewBox="0 0 24 24"><path d="M2.01 21L23 12L2.01 3L2 10L17 12L2 14L2.01 21Z"/></svg>`;
 
   const launcher = document.createElement("button");
-  launcher.className = "cobalto-launcher";
+  launcher.className = "cobalto-launcher cobalto-widget";
   launcher.setAttribute("aria-label", "Abrir assistente virtual Cobalto");
-  launcher.innerHTML = `${svgBalon}<span class="cobalto-launcher-text">${COBALTO_CONFIG.nome}</span>`;
+  launcher.innerHTML = `
+    <span class="cobalto-launcher-avatar-frame">
+      <img src="${avatarSrc}" alt="Cobalto" class="cobalto-launcher-avatar" />
+    </span>
+    <span class="cobalto-launcher-text">${COBALTO_CONFIG.nome}</span>
+  `;
   document.body.appendChild(launcher);
 
   const panel = document.createElement("div");
-  panel.className = "cobalto-panel";
+  panel.className = "cobalto-panel cobalto-widget";
   panel.setAttribute("role", "dialog");
   panel.setAttribute("aria-label", "Chat com Cobalto");
 
   const header = document.createElement("div");
   header.className = "cobalto-header";
   header.innerHTML = `
-    <div class="cobalto-header-info">
-      <h3 class="cobalto-header-title">${COBALTO_CONFIG.nome}</h3>
-      <p class="cobalto-header-subtitle">Assistente virtual (IA) da J. Thales Pinturas</p>
+    <div class="cobalto-header-brand">
+      <div class="cobalto-header-avatar-frame">
+        <img src="${avatarSrc}" alt="Cobalto" class="cobalto-header-avatar" />
+        <span class="cobalto-online-status" title="Cobalto Online"></span>
+      </div>
+      <div class="cobalto-header-info">
+        <h3 class="cobalto-header-title">${COBALTO_CONFIG.nome}</h3>
+        <p class="cobalto-header-subtitle">Assistente virtual (IA) da J. Thales Pinturas</p>
+      </div>
     </div>
     <button class="cobalto-close" aria-label="Fechar chat">${svgClose}</button>
   `;
@@ -97,10 +108,27 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function appendMessage(role, content) {
-    const msgDiv = document.createElement("div");
-    msgDiv.className = `cobalto-msg cobalto-msg-${role}`;
-    safeRender(content, msgDiv);
-    body.insertBefore(msgDiv, body.querySelector('.cobalto-disclaimer') || null);
+    if (role === "bot") {
+      const row = document.createElement("div");
+      row.className = "cobalto-msg-row cobalto-msg-row-bot";
+
+      const avatarWrap = document.createElement("div");
+      avatarWrap.className = "cobalto-msg-avatar-frame";
+      avatarWrap.innerHTML = `<img src="${avatarSrc}" alt="Cobalto" class="cobalto-msg-avatar" />`;
+
+      const msgDiv = document.createElement("div");
+      msgDiv.className = "cobalto-msg cobalto-msg-bot";
+      safeRender(content, msgDiv);
+
+      row.appendChild(avatarWrap);
+      row.appendChild(msgDiv);
+      body.insertBefore(row, body.querySelector('.cobalto-disclaimer') || null);
+    } else {
+      const msgDiv = document.createElement("div");
+      msgDiv.className = `cobalto-msg cobalto-msg-${role}`;
+      safeRender(content, msgDiv);
+      body.insertBefore(msgDiv, body.querySelector('.cobalto-disclaimer') || null);
+    }
     scrollToBottom();
   }
 
@@ -116,11 +144,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showTyping() {
+    const row = document.createElement("div");
+    row.className = "cobalto-msg-row cobalto-msg-row-bot cobalto-typing-row";
+    row.id = "cobalto-typing";
+
+    const avatarWrap = document.createElement("div");
+    avatarWrap.className = "cobalto-msg-avatar-frame";
+    avatarWrap.innerHTML = `<img src="${avatarSrc}" alt="Cobalto" class="cobalto-msg-avatar" />`;
+
     const t = document.createElement("div");
     t.className = "cobalto-msg cobalto-msg-bot cobalto-typing";
     t.innerHTML = `<div class="cobalto-dot"></div><div class="cobalto-dot"></div><div class="cobalto-dot"></div>`;
-    t.id = "cobalto-typing";
-    body.insertBefore(t, body.querySelector('.cobalto-disclaimer') || null);
+
+    row.appendChild(avatarWrap);
+    row.appendChild(t);
+    body.insertBefore(row, body.querySelector('.cobalto-disclaimer') || null);
     scrollToBottom();
   }
 
@@ -180,7 +218,15 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       hideTyping();
-      if (!res.ok) throw new Error("API falhou");
+      if (!res.ok) {
+        let errDetail = "";
+        try {
+          const errData = await res.json();
+          errDetail = errData.error || "";
+        } catch (_) {}
+        console.error("Cobalto API Error:", res.status, errDetail);
+        throw new Error(errDetail || "API falhou");
+      }
       
       const data = await res.json();
       if (data.reply) {
@@ -191,6 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (e) {
       hideTyping();
+      console.error("Cobalto Error:", e.message || e);
       messagesHistory.pop(); // Remove user msg from history so they can retry
       appendMessage("bot", "Não consegui responder agora. Tente de novo ou fale com o Thales pelo WhatsApp.");
     } finally {

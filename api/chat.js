@@ -26,46 +26,71 @@ module.exports = async function handler(req, res) {
 
   const origin = req.headers.origin || req.headers.referer || '';
   const allowedOriginsEnv = process.env.ALLOWED_ORIGINS || '';
-  const allowedOrigins = allowedOriginsEnv.split(',').map(s => s.trim()).filter(Boolean);
-  const host = req.headers.host;
+  const allowedOrigins = allowedOriginsEnv.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+  const host = (req.headers.host || '').toLowerCase();
 
-  let originAllowed = false;
-  try {
-    const originUrl = origin ? new URL(origin) : null;
-    if (!origin || allowedOrigins.includes(origin) || (originUrl && (originUrl.host === host || originUrl.host.endsWith('.vercel.app')))) {
+  let originAllowed = true;
+  if (origin) {
+    try {
+      const originUrl = new URL(origin);
+      const originHost = originUrl.host.toLowerCase();
+      originAllowed = (
+        !originHost ||
+        originHost === host ||
+        originHost.endsWith('.vercel.app') ||
+        originHost.includes('localhost') ||
+        originHost.includes('127.0.0.1') ||
+        allowedOrigins.length === 0 ||
+        allowedOrigins.some(o => o.includes(originHost))
+      );
+    } catch (e) {
       originAllowed = true;
     }
-  } catch (e) {}
+  }
 
-  if (!originAllowed && origin) return res.status(403).json({ error: 'Forbidden' });
+  if (!originAllowed) {
+    console.warn(`Origin blocked: ${origin} (host: ${host})`);
+    return res.status(403).json({ error: 'Origem não autorizada.' });
+  }
 
-  const ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket.remoteAddress || 'unknown';
-  if (!checkRateLimit(ip)) return res.status(429).json({ error: 'Too Many Requests' });
+  const rawIp = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket.remoteAddress || 'unknown';
+  const ip = typeof rawIp === 'string' ? rawIp.split(',')[0].trim() : 'unknown';
+  if (!checkRateLimit(ip)) return res.status(429).json({ error: 'Muitas mensagens. Aguarde um momento.' });
 
   try {
     const { messages } = req.body;
     if (!Array.isArray(messages) || messages.length === 0 || messages.length > 12) {
-      return res.status(400).json({ error: 'Invalid messages array.' });
+      return res.status(400).json({ error: 'Array de mensagens inválido.' });
     }
 
     const lastMsg = messages[messages.length - 1];
-    if (lastMsg.role !== 'user') return res.status(400).json({ error: 'Last message must be user.' });
+    if (lastMsg.role !== 'user') return res.status(400).json({ error: 'A última mensagem deve ser do usuário.' });
 
     const geminiMessages = [];
     for (const msg of messages) {
-      if (typeof msg.content !== 'string' || !msg.content.trim()) return res.status(400).json({ error: 'Invalid content.' });
-      if (msg.content.length > 600) return res.status(400).json({ error: 'Content too long.' });
+      if (typeof msg.content !== 'string' || !msg.content.trim()) return res.status(400).json({ error: 'Conteúdo de mensagem inválido.' });
+      if (msg.content.length > 600) return res.status(400).json({ error: 'Mensagem muito longa (máx 600 caracteres).' });
       geminiMessages.push({ role: msg.role === 'assistant' ? 'model' : 'user', parts: [{ text: msg.content.trim() }] });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: 'Internal Server Error' });
+    const apiKey = (process.env.GEMINI_API_KEY || '').trim().replace(/^["']|["']$/g, '');
+    if (!apiKey) {
+      console.error('GEMINI_API_KEY não foi configurada nas variáveis de ambiente da Vercel.');
+      return res.status(500).json({ error: 'GEMINI_API_KEY não configurada na Vercel. Adicione a chave nas Configurações do Projeto.' });
+    }
 
-    const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+    const modelsToTry = [
+      (process.env.GEMINI_MODEL || '').trim(),
+      'gemini-1.5-flash',
+      'gemini-2.0-flash',
+      'gemini-2.5-flash'
+    ].filter(Boolean);
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 20000);
+    // Remove duplicatas mantendo a ordem
+    const uniqueModels = [...new Set(modelsToTry)];
+
+    let replyText = null;
+    let lastError = null;
 
     const requestBody = {
       systemInstruction: { parts: [{ text: systemInstruction }] },
@@ -73,28 +98,48 @@ module.exports = async function handler(req, res) {
       generationConfig: { temperature: 0.4, maxOutputTokens: 500 }
     };
 
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-      body: JSON.stringify(requestBody),
-      signal: controller.signal
-    });
+    for (const model of uniqueModels) {
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 18000);
 
-    clearTimeout(timeoutId);
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+          body: JSON.stringify(requestBody),
+          signal: controller.signal
+        });
 
-    if (!response.ok) {
-      console.error(`Gemini Error: ${response.status} - ${await response.text()}`);
-      return res.status(502).json({ error: 'Não consegui me conectar agora.' });
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          const data = await response.json();
+          replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (replyText) break; // Sucesso!
+        } else {
+          const errText = await response.text();
+          console.warn(`Tentativa com modelo ${model} falhou: ${response.status} - ${errText}`);
+          lastError = `${response.status}: ${errText}`;
+          // Se for erro de chave inválida, não adianta tentar outros modelos
+          if (response.status === 400 && errText.includes('API_KEY_INVALID')) {
+            return res.status(400).json({ error: 'A chave GEMINI_API_KEY informada é inválida. Verifique a chave no Google AI Studio.' });
+          }
+        }
+      } catch (fetchErr) {
+        clearTimeout(timeoutId);
+        lastError = fetchErr.message;
+      }
     }
 
-    const data = await response.json();
-    const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    
-    if (!replyText) return res.status(500).json({ error: 'Empty response' });
+    if (!replyText) {
+      console.error('Nenhum modelo respondeu com sucesso. Último erro:', lastError);
+      return res.status(502).json({ error: 'Não foi possível gerar a resposta no Gemini. ' + (lastError || '') });
+    }
 
     return res.status(200).json({ reply: replyText.trim() });
   } catch (error) {
     console.error('API Error:', error);
-    return res.status(error.name === 'AbortError' ? 504 : 500).json({ error: 'Erro no servidor.' });
+    return res.status(error.name === 'AbortError' ? 504 : 500).json({ error: 'Erro interno no servidor: ' + error.message });
   }
 };

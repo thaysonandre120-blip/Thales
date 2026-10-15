@@ -2,7 +2,10 @@
    COBALTO - ASSISTENTE VIRTUAL IA
    ========================================================================== */
 
-.cobalto-widget {
+:root,
+.cobalto-widget,
+.cobalto-panel,
+.cobalto-launcher {
   --cobalto-emerald: #0C3629;
   --cobalto-emerald-dark: #07221A;
   --cobalto-blue: #0047AB;
@@ -22,15 +25,16 @@
   z-index: 850;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background-color: var(--cobalto-emerald);
+  gap: 0.65rem;
+  background-color: #0C3629;
+  background-color: var(--cobalto-emerald, #0C3629);
   color: #FFFFFF;
-  padding: 1rem;
+  padding: 0.75rem 1.15rem;
   border: none;
   border-radius: 0;
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .cobalto-launcher::after {
@@ -40,18 +44,37 @@
   right: 0;
   width: 8px;
   height: 8px;
-  background-color: var(--cobalto-blue);
+  background-color: #0047AB;
+  background-color: var(--cobalto-blue, #0047AB);
 }
 
 .cobalto-launcher:hover {
   transform: translateY(-2px);
-  background-color: var(--cobalto-emerald-dark);
+  background-color: #07221A;
+  background-color: var(--cobalto-emerald-dark, #07221A);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
-.cobalto-launcher svg {
-  width: 24px;
-  height: 24px;
-  fill: currentColor;
+.cobalto-launcher-avatar-frame {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  border: 1.5px solid #0047AB;
+  border-color: var(--cobalto-blue, #0047AB);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.cobalto-launcher-avatar {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  display: block;
 }
 
 .cobalto-launcher-text {
@@ -71,17 +94,21 @@
   right: 1.25rem;
   width: 380px;
   height: 560px;
-  background-color: var(--cobalto-bg);
-  border: 1px solid var(--cobalto-border);
+  max-height: calc(100vh - 6rem);
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+  border: 1px solid #DFE3DE;
+  border-color: var(--cobalto-border, #DFE3DE);
   border-radius: 0;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  z-index: 900;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
+  z-index: 10001; /* Fica acima do WhatsApp e elementos fixos da tela */
   display: flex;
   flex-direction: column;
   opacity: 0;
   pointer-events: none;
   transform: translateY(20px);
   transition: opacity 0.3s ease, transform 0.3s ease;
+  overflow: hidden;
 }
 
 .cobalto-panel.cobalto-is-open {
@@ -93,12 +120,52 @@
 .cobalto-header {
   background-color: var(--cobalto-emerald-dark);
   color: #FFFFFF;
-  padding: 1rem;
+  padding: 0.85rem 1rem;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   border-bottom: 2px solid var(--cobalto-blue);
   border-radius: 0;
+}
+
+.cobalto-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cobalto-header-avatar-frame {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  border: 2px solid var(--cobalto-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.cobalto-header-avatar {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  border-radius: 50%;
+  display: block;
+}
+
+.cobalto-online-status {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 12px;
+  height: 12px;
+  background-color: #10B981;
+  border: 2px solid var(--cobalto-emerald-dark);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
 .cobalto-header-info {
@@ -135,7 +202,8 @@
   flex: 1;
   overflow-y: auto;
   padding: 1rem;
-  background-color: var(--cobalto-bg-soft);
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -143,7 +211,41 @@
 
 .cobalto-body::-webkit-scrollbar { width: 6px; }
 .cobalto-body::-webkit-scrollbar-track { background: transparent; }
-.cobalto-body::-webkit-scrollbar-thumb { background: var(--cobalto-border); }
+.cobalto-body::-webkit-scrollbar-thumb { background: #DFE3DE; }
+
+.cobalto-msg-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  max-width: 90%;
+  align-self: flex-start;
+}
+
+.cobalto-msg-avatar-frame {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  border: 1px solid #DFE3DE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  margin-bottom: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.cobalto-msg-avatar {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  display: block;
+}
+
+.cobalto-msg-row .cobalto-msg-bot {
+  max-width: 100%;
+}
 
 .cobalto-msg {
   max-width: 85%;
@@ -156,20 +258,22 @@
 
 .cobalto-msg-bot {
   align-self: flex-start;
-  background-color: var(--cobalto-bg);
-  color: var(--cobalto-text);
-  border: 1px solid var(--cobalto-border);
-  border-left: 3px solid var(--cobalto-blue);
+  background-color: #F4F6F4 !important;
+  background: #F4F6F4 !important;
+  color: #171A19 !important;
+  border: 1px solid #DFE3DE;
+  border-left: 3px solid #0047AB !important;
 }
 
 .cobalto-msg-user {
   align-self: flex-end;
-  background-color: var(--cobalto-emerald);
-  color: #FFFFFF;
+  background-color: #0C3629 !important;
+  background: #0C3629 !important;
+  color: #FFFFFF !important;
 }
 
 .cobalto-msg strong { font-weight: 700; }
-.cobalto-msg a { color: var(--cobalto-blue); text-decoration: underline; font-weight: 600; }
+.cobalto-msg a { color: #0047AB; text-decoration: underline; font-weight: 600; }
 .cobalto-msg-user a { color: #FFFFFF; }
 
 .cobalto-typing {
@@ -181,7 +285,7 @@
 .cobalto-dot {
   width: 6px;
   height: 6px;
-  background-color: var(--cobalto-text-muted);
+  background-color: #727D78;
   animation: cobalto-blink 1.4s infinite both;
   border-radius: 0;
 }
@@ -197,7 +301,7 @@
 .cobalto-disclaimer {
   font-size: 0.65rem;
   text-align: center;
-  color: var(--cobalto-text-muted);
+  color: #727D78;
   margin-top: auto;
   padding-top: 1rem;
 }
@@ -209,48 +313,51 @@
   margin-top: 0.5rem;
 }
 .cobalto-chip {
-  background-color: var(--cobalto-bg);
-  border: 1px solid var(--cobalto-border);
-  color: var(--cobalto-emerald);
+  background-color: #FFFFFF !important;
+  border: 1px solid #DFE3DE;
+  color: #0C3629 !important;
   font-size: 0.75rem;
-  padding: 0.4rem 0.75rem;
+  padding: 0.45rem 0.75rem;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, border-color 0.2s;
   text-align: left;
   border-radius: 0;
 }
 .cobalto-chip:hover {
-  background-color: var(--cobalto-user-msg);
+  background-color: #EEF1ED !important;
+  border-color: #0C3629;
 }
 
 .cobalto-footer {
   padding: 0.75rem 1rem;
-  background-color: var(--cobalto-bg);
-  border-top: 1px solid var(--cobalto-border);
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+  border-top: 1px solid #DFE3DE;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .cobalto-input-row { display: flex; gap: 0.5rem; }
 
 .cobalto-input {
   flex: 1;
-  border: 1px solid var(--cobalto-border);
+  border: 1px solid #DFE3DE;
   padding: 0.75rem;
   font-family: inherit;
   font-size: 0.9rem;
-  background-color: var(--cobalto-bg-soft);
-  color: var(--cobalto-text);
+  background-color: #F7F8F5 !important;
+  color: #171A19 !important;
   outline: none;
   resize: none;
   border-radius: 0;
 }
-.cobalto-input:focus { border-color: var(--cobalto-emerald); }
-.cobalto-input:disabled { background-color: var(--cobalto-border); cursor: not-allowed; }
+.cobalto-input:focus { border-color: #0C3629; }
+.cobalto-input:disabled { background-color: #DFE3DE !important; cursor: not-allowed; }
 
 .cobalto-send {
-  background-color: var(--cobalto-emerald);
+  background-color: #0C3629;
   color: #FFFFFF;
   border: none;
   width: 44px;
@@ -262,17 +369,17 @@
   transition: background-color 0.2s;
   border-radius: 0;
 }
-.cobalto-send:hover:not(:disabled) { background-color: var(--cobalto-emerald-dark); }
+.cobalto-send:hover:not(:disabled) { background-color: #07221A; }
 .cobalto-send:disabled { opacity: 0.5; cursor: not-allowed; }
 .cobalto-send svg { width: 18px; height: 18px; fill: currentColor; }
 
 .cobalto-footer-link {
   font-size: 0.7rem;
   text-align: center;
-  color: var(--cobalto-text-muted);
+  color: #727D78;
 }
 .cobalto-footer-link a {
-  color: var(--cobalto-emerald);
+  color: #0C3629;
   font-weight: 700;
 }
 
@@ -282,10 +389,15 @@
     right: 0;
     left: 0;
     width: 100%;
-    height: 80vh;
+    height: 85vh;
+    max-height: 85vh;
+    background-color: #FFFFFF !important;
+    background: #FFFFFF !important;
     border-left: none;
     border-right: none;
     border-bottom: none;
+    z-index: 10001;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
   }
 }
 

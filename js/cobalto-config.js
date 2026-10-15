@@ -1,5 +1,6 @@
 const COBALTO_CONFIG = {
   nome: "Cobalto",
+  avatarUrl: "images/cobalto-logo.png",
   boasVindas: "Olá! Eu sou o Cobalto, assistente virtual da J. Thales Pinturas. Posso tirar dúvidas sobre tintas, preparo de superfície, pintura e revitalização. Como posso ajudar?",
   perguntasSugeridas: [
     "Qual tinta usar na fachada?",
