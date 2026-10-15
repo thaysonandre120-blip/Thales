@@ -1793,6 +1793,13 @@ button {
   box-shadow: 0 10px 24px rgba(12, 54, 41, 0.08);
 }
 
+/* Foto horizontal ocupando a largura toda da galeria */
+.gallery-photo-wide {
+  grid-column: 1 / -1;
+  aspect-ratio: 16 / 10;
+  max-height: 520px;
+}
+
 .svc-photo-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1881,4 +1888,109 @@ button {
   border: 1px solid #ddd;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   border-radius: 4px;
+  height: auto;
+  aspect-ratio: 1600 / 1130;
+  object-fit: contain;
+}
+
+/* Títulos de grupo dentro de um mesmo serviço (ex.: Limpeza de vidro e pós obra) */
+.svc-panel-content > .compare-project-header {
+  margin-top: 1.25rem;
+}
+
+.svc-panel-content > .compare-project-header + .svc-photo-grid {
+  margin-top: 0.5rem;
+}
+
+.svc-group-header {
+  margin-top: 2rem !important;
+}
+
+
+/* ==========================================================================
+   ABERTURA AUTOMÁTICA DOS SERVIÇOS (scroll) - entrada em cascata das fotos
+   ========================================================================== */
+@keyframes svcPhotoIn {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Fotos de serviços sem sub-seções: animam quando o serviço abre */
+.svc-item.is-open .svc-panel-content:not(.svc-panel-with-subsections) .svc-photo,
+/* Fotos dentro de sub-seções: animam quando a sub-seção abre */
+.svc-sub-item.is-open .svc-photo {
+  animation: svcPhotoIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: calc(0.18s + var(--i, 0) * 0.09s);
+}
+
+/* Destaque rápido no título que acabou de abrir sozinho */
+@keyframes svcFlash {
+  0%   { background-color: rgba(28, 125, 141, 0.16); box-shadow: inset 3px 0 0 var(--color-emerald); }
+  100% { background-color: transparent; box-shadow: inset 3px 0 0 transparent; }
+}
+
+.svc-item.svc-just-opened > .svc-heading .svc-trigger,
+.svc-sub-item.svc-just-opened > .svc-sub-heading .svc-sub-trigger {
+  animation: svcFlash 1.3s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .svc-item.is-open .svc-panel-content:not(.svc-panel-with-subsections) .svc-photo,
+  .svc-sub-item.is-open .svc-photo,
+  .svc-item.svc-just-opened > .svc-heading .svc-trigger,
+  .svc-sub-item.svc-just-opened > .svc-sub-heading .svc-sub-trigger {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+   LIMPEZA DE VIDRO E PÓS OBRA - conteúdo empilhado e centralizado
+   ========================================================================== */
+.svc-panel-content.svc-panel-stack {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+  padding: 0.5rem 0.75rem clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.svc-panel-stack .svc-desc {
+  max-width: 62ch;
+  margin: 0 auto;
+}
+
+.svc-panel-stack .compare-project-header {
+  width: 100%;
+  justify-content: center;
+  padding-bottom: 0;
+}
+
+.svc-panel-stack .svc-photo-grid {
+  width: 100%;
+  max-width: 780px;
+  margin: 0.5rem auto 0;
+}
+
+/* Foto ímpar no fim da grade: centralizada, em vez de colada à esquerda */
+.svc-panel-stack .svc-photo-grid > .svc-photo:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: calc(50% - 0.5rem);
+}
+
+/* Certificado: centralizado e maior, para dar para ler */
+.svc-panel-stack .svc-photo-grid > .svc-photo.certificado-img:last-child:nth-child(odd) {
+  width: min(100%, 560px);
+}
+
+@media (max-width: 500px) {
+  .svc-panel-stack .svc-photo-grid > .svc-photo:last-child:nth-child(odd),
+  .svc-panel-stack .svc-photo-grid > .svc-photo.certificado-img:last-child:nth-child(odd) {
+    width: 100%;
+  }
 }

@@ -36,11 +36,6 @@ const SITE_CONFIG = {
       exibir: true,
       usuario: "@jthales_pinturas", // Altere para o seu @ de usuário
       url: "https://www.instagram.com/jthales_pinturas?utm_source=ig_web_button_share_sheet&stkn=ZDNlZDc0MzIxNw=="
-    },
-    youtube: {
-      exibir: true, // Mude para false se preferir ocultar o link do YouTube
-      usuario: "J. Thales Pinturas",
-      url: "https://youtube.com/@jthalespinturas"
     }
   },
 

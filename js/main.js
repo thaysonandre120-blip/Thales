@@ -37,6 +37,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // 6. Lista de serviços em acordeão
   inicializarServicos();
   inicializarSubServicos();
+
+  // 6.1 Abertura automática dos serviços conforme o scroll
+  inicializarAberturaAutomaticaServicos();
 });
 
 /**
@@ -99,6 +102,98 @@ function inicializarSubServicos() {
 }
 
 /**
+ * Abertura automática dos serviços ao rolar a página.
+ * Ordem: Pintura -> sub-seção seguinte (Pintura interna) -> Revitalização -> Limpeza de vidro e pós obra.
+ * Cada passo só dispara quando o título do próximo item entra na parte baixa da tela,
+ * ou seja, depois que o usuário já rolou pelo conteúdo aberto. As seções abertas
+ * automaticamente continuam abertas (assim o conteúdo acima da tela nunca "pula").
+ * Ao clicar manualmente em qualquer título, o modo automático é desligado.
+ */
+function inicializarAberturaAutomaticaServicos() {
+  const lista = document.querySelector(".svc-list");
+  if (!lista) return;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  // Sequência de passos, na ordem em que aparecem no documento
+  const passos = [];
+  lista.querySelectorAll(".svc-item").forEach((item) => {
+    passos.push({ el: item, trigger: item.querySelector(".svc-trigger") });
+    item.querySelectorAll(".svc-sub-item").forEach((sub) => {
+      passos.push({ el: sub, trigger: sub.querySelector(".svc-sub-trigger") });
+    });
+  });
+
+  // Índice de entrada em cascata das fotos (usado pelo CSS)
+  lista.querySelectorAll(".svc-photo").forEach((foto) => {
+    const grupo = foto.closest(".svc-photo-grid, .svc-gallery-grid, .compare-grid");
+    const irmas = grupo ? Array.from(grupo.querySelectorAll(".svc-photo")) : [foto];
+    foto.style.setProperty("--i", Math.max(0, irmas.indexOf(foto)));
+  });
+
+  let indice = 0;
+  let ativo = true;
+  let aguardando = false;
+  let pendente = false;
+
+  function parar() {
+    ativo = false;
+    window.removeEventListener("scroll", agendar);
+    window.removeEventListener("resize", agendar);
+  }
+
+  function abrir(passo) {
+    passo.el.classList.add("is-open", "svc-just-opened");
+    if (passo.trigger) passo.trigger.setAttribute("aria-expanded", "true");
+    setTimeout(() => passo.el.classList.remove("svc-just-opened"), 1400);
+  }
+
+  function verificar() {
+    pendente = false;
+    if (!ativo || aguardando) return;
+
+    // pula passos que já estão abertos (ex.: sub-seção aberta por padrão)
+    while (indice < passos.length && passos[indice].el.classList.contains("is-open")) indice++;
+    if (indice >= passos.length) {
+      parar();
+      return;
+    }
+
+    const passo = passos[indice];
+    if (!passo.trigger) {
+      indice++;
+      return;
+    }
+
+    const topo = passo.trigger.getBoundingClientRect().top;
+    if (topo < window.innerHeight * 0.8) {
+      abrir(passo);
+      indice++;
+      // espera a animação de abertura terminar antes de avaliar o próximo passo
+      aguardando = true;
+      setTimeout(() => {
+        aguardando = false;
+        agendar();
+      }, 700);
+    }
+  }
+
+  function agendar() {
+    if (pendente) return;
+    pendente = true;
+    requestAnimationFrame(verificar);
+  }
+
+  // Clique manual em qualquer título desliga o modo automático
+  lista.querySelectorAll(".svc-trigger, .svc-sub-trigger").forEach((botao) => {
+    botao.addEventListener("click", parar, true);
+  });
+
+  window.addEventListener("scroll", agendar, { passive: true });
+  window.addEventListener("resize", agendar);
+  agendar();
+}
+
+/**
  * Aplica as constantes do arquivo config.js nos elementos do DOM
  */
 function aplicarConfiguracoes(cfg) {
@@ -126,10 +221,11 @@ function aplicarConfiguracoes(cfg) {
     btnMobile.href = whatsappUrl;
   }
 
-  // Link direto de telefone/WhatsApp
+  // Link direto de telefone (ligação)
   const linkTelefone = document.getElementById("direct-phone-link");
   if (linkTelefone) {
-    linkTelefone.href = whatsappUrl;
+    // Abre o discador do celular (tel:) para o cliente ligar direto
+    linkTelefone.href = `tel:+${cfg.whatsapp.numeroLink}`;
     linkTelefone.textContent = cfg.whatsapp.numeroExibicao;
   }
 
@@ -142,23 +238,6 @@ function aplicarConfiguracoes(cfg) {
   }
   if (footerInstagram && cfg.redesSociais.instagram) {
     footerInstagram.href = cfg.redesSociais.instagram.url;
-  }
-
-  // Redes Sociais - YouTube
-  const canalYoutubeItem = document.getElementById("youtube-channel-item");
-  const linkYoutube = document.getElementById("youtube-link");
-  const footerYoutube = document.getElementById("footer-youtube");
-  if (cfg.redesSociais.youtube && cfg.redesSociais.youtube.exibir) {
-    if (linkYoutube) {
-      linkYoutube.href = cfg.redesSociais.youtube.url;
-      linkYoutube.textContent = cfg.redesSociais.youtube.usuario;
-    }
-    if (footerYoutube) {
-      footerYoutube.href = cfg.redesSociais.youtube.url;
-    }
-  } else {
-    if (canalYoutubeItem) canalYoutubeItem.style.display = "none";
-    if (footerYoutube) footerYoutube.style.display = "none";
   }
 }
 
