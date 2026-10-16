@@ -1947,6 +1947,11 @@ button {
   .svc-sub-item.svc-just-opened > .svc-sub-heading .svc-sub-trigger {
     animation: none;
   }
+  .fade-in-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 /* ==========================================================================

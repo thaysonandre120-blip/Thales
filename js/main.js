@@ -104,22 +104,22 @@ function inicializarSubServicos() {
 /**
  * Abertura automática dos serviços ao rolar a página.
  * Ordem: Pintura -> sub-seção seguinte (Pintura interna) -> Revitalização -> Limpeza de vidro e pós obra.
- * Cada passo só dispara quando o título do próximo item entra na parte baixa da tela,
- * ou seja, depois que o usuário já rolou pelo conteúdo aberto. As seções abertas
- * automaticamente continuam abertas (assim o conteúdo acima da tela nunca "pula").
- * Ao clicar manualmente em qualquer título, o modo automático é desligado.
+ * Cada passo dispara quando o título entra no campo visual (ou se já foi ultrapassado pelo scroll).
+ * As seções abertas continuam abertas para evitar pulos indesejados no layout.
+ * Totalmente compatível com economia de bateria, rolagem rápida no celular e diferentes telas.
  */
 function inicializarAberturaAutomaticaServicos() {
   const lista = document.querySelector(".svc-list");
   if (!lista) return;
-  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const isReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // Sequência de passos, na ordem em que aparecem no documento
   const passos = [];
   lista.querySelectorAll(".svc-item").forEach((item) => {
-    passos.push({ el: item, trigger: item.querySelector(".svc-trigger") });
+    passos.push({ el: item, trigger: item.querySelector(".svc-trigger"), ignorarAuto: false });
     item.querySelectorAll(".svc-sub-item").forEach((sub) => {
-      passos.push({ el: sub, trigger: sub.querySelector(".svc-sub-trigger") });
+      passos.push({ el: sub, trigger: sub.querySelector(".svc-sub-trigger"), ignorarAuto: false });
     });
   });
 
@@ -142,17 +142,27 @@ function inicializarAberturaAutomaticaServicos() {
   }
 
   function abrir(passo) {
-    passo.el.classList.add("is-open", "svc-just-opened");
+    if (isReducedMotion) {
+      passo.el.classList.add("is-open");
+    } else {
+      passo.el.classList.add("is-open", "svc-just-opened");
+      setTimeout(() => passo.el.classList.remove("svc-just-opened"), 1400);
+    }
     if (passo.trigger) passo.trigger.setAttribute("aria-expanded", "true");
-    setTimeout(() => passo.el.classList.remove("svc-just-opened"), 1400);
   }
 
   function verificar() {
     pendente = false;
     if (!ativo || aguardando) return;
 
-    // pula passos que já estão abertos (ex.: sub-seção aberta por padrão)
-    while (indice < passos.length && passos[indice].el.classList.contains("is-open")) indice++;
+    // Pula passos que já estão abertos ou que foram marcados para ignorar
+    while (
+      indice < passos.length &&
+      (passos[indice].el.classList.contains("is-open") || passos[indice].ignorarAuto)
+    ) {
+      indice++;
+    }
+
     if (indice >= passos.length) {
       parar();
       return;
@@ -161,19 +171,30 @@ function inicializarAberturaAutomaticaServicos() {
     const passo = passos[indice];
     if (!passo.trigger) {
       indice++;
+      agendar();
       return;
     }
 
     const topo = passo.trigger.getBoundingClientRect().top;
-    if (topo < window.innerHeight * 0.8) {
+
+    // Se o elemento já entrou na tela (85% da altura da tela para ser bem responsivo)
+    if (topo < window.innerHeight * 0.85) {
       abrir(passo);
       indice++;
-      // espera a animação de abertura terminar antes de avaliar o próximo passo
-      aguardando = true;
-      setTimeout(() => {
-        aguardando = false;
-        agendar();
-      }, 700);
+
+      // Se o usuário rolou rápido e este item já está acima da tela (topo <= 0),
+      // não esperamos animação: verificamos o próximo passo imediatamente!
+      if (topo <= 0) {
+        verificar();
+      } else {
+        // Se o elemento está visível, aguardamos tempo reduzido (350ms)
+        // para dar fluidez sem travar os próximos itens do scroll
+        aguardando = true;
+        setTimeout(() => {
+          aguardando = false;
+          agendar();
+        }, 350);
+      }
     }
   }
 
@@ -183,9 +204,13 @@ function inicializarAberturaAutomaticaServicos() {
     requestAnimationFrame(verificar);
   }
 
-  // Clique manual em qualquer título desliga o modo automático
-  lista.querySelectorAll(".svc-trigger, .svc-sub-trigger").forEach((botao) => {
-    botao.addEventListener("click", parar, true);
+  // Se o usuário interagir manualmente com um item (ex: fechar), respeitamos
+  // aquela seção específica sem desligar a automação das próximas seções!
+  passos.forEach((passo) => {
+    if (!passo.trigger) return;
+    passo.trigger.addEventListener("click", () => {
+      passo.ignorarAuto = true;
+    });
   });
 
   window.addEventListener("scroll", agendar, { passive: true });
